@@ -1,0 +1,135 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h> // para sleep()
+
+// Função para limpar a tela
+void limparTela() {
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
+}
+
+// Função de "carregando"
+void loading(const char *msg) {
+    printf("%s", msg);
+    fflush(stdout);
+    for (int i = 0; i < 3; i++) {
+        sleep(1);
+        printf(".");
+        fflush(stdout);
+    }
+    printf("\n");
+    sleep(1);
+}
+
+// Função para mostrar o painel com menu e resumo
+void mostrarPainel(int atividades[7], char *dias[7]) {
+    printf("=======================================\n");
+    printf("   SISTEMA DE ROTINA DE ATIVIDADE FISICA\n");
+    printf("=======================================\n");
+
+    // Menu
+    printf("\nMenu de Opcoes:\n");
+    printf("1 - Registrar atividade\n");
+    printf("2 - Consultar atividades da semana\n");
+    printf("3 - Mostrar Top Day\n");
+    printf("4 - Estatisticas (Total e Media)\n");
+    printf("5 - Resetar registros da semana\n");
+    printf("0 - Sair\n");
+
+    // Resumo rápido da semana com barras
+    printf("\n--- Resumo Visual da Semana ---\n");
+    for(int i = 0; i < 7; i++) {
+        printf("%-12s : %2d | ", dias[i], atividades[i]);
+        for(int j = 0; j < atividades[i]; j++) {
+            printf("#");
+        }
+        printf("\n");
+    }
+    printf("=======================================\n\n");
+}
+
+int main() {
+    int atividades[7] = {0};
+    char *dias[7] = {
+        "Domingo", "Segunda", "Terca",
+        "Quarta", "Quinta", "Sexta", "Sabado"
+    };
+
+    int opcao, dia, qtd, i, topIndex, total;
+    float media;
+
+    while(1) {
+        limparTela();
+        mostrarPainel(atividades, dias);
+
+        printf("Escolha uma opcao: ");
+        scanf("%d", &opcao);
+
+        switch(opcao) {
+            case 1:
+                printf("\nDigite o dia da semana (1=Domingo ... 7=Sabado): ");
+                scanf("%d", &dia);
+                if(dia >=1 && dia <=7) {
+                    printf("Quantas atividades voce fez %s? ", dias[dia-1]);
+                    scanf("%d", &qtd);
+                    if(qtd > 0) {
+                        atividades[dia-1] += qtd;
+                        printf("\nAtividade registrada!\n");
+                    } else {
+                        printf("\nValor invalido!\n");
+                    }
+                } else {
+                    printf("\nDia invalido!\n");
+                }
+                break;
+
+            case 2:
+                printf("\n--- Relatorio Completo da Semana ---\n");
+                for(i=0;i<7;i++)
+                    printf("%-12s : %d atividades\n", dias[i], atividades[i]);
+                break;
+
+            case 3:
+                topIndex = 0;
+                for(i=1;i<7;i++)
+                    if(atividades[i] > atividades[topIndex]) topIndex = i;
+                if(atividades[topIndex] > 0)
+                    printf("\nTop Day: %s com %d atividades!\n", dias[topIndex], atividades[topIndex]);
+                else
+                    printf("\nNenhuma atividade registrada ainda!\n");
+                break;
+
+            case 4:
+                total = 0;
+                for(i=0;i<7;i++) total += atividades[i];
+                media = total / 7.0;
+                printf("\nEstatisticas da Semana:\n");
+                printf("Total de atividades: %d\n", total);
+                printf("Media diaria: %.2f\n", media);
+                break;
+
+            case 5:
+                for(i=0;i<7;i++) atividades[i] = 0;
+                loading("Resetando registros");
+                printf("Todos os registros foram resetados!\n");
+                break;
+
+            case 0:
+                loading("Encerrando o programa");
+                printf("Obrigado por usar o sistema!\n");
+                return 0;
+
+            default:
+                printf("\nOpcao invalida!\n");
+        }
+
+        printf("\nPressione ENTER para continuar...");
+        getchar(); // consome enter pendente
+        getchar(); // espera ENTER
+    }
+
+    return 0;
+}
