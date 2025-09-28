@@ -1,0 +1,85 @@
+#include <stdio.h>
+#include   <windows.h>
+
+int main() {
+
+    SetConsoleOutputCP(65001);
+    
+    // Tela de boas-vindas
+    printf("=====================================\n");
+    printf("       Bem-vindo ao Almoçotech    \n"); 
+    printf("   Sistema de Monitoramento Semanal  \n");
+    printf("=====================================\n\n");
+
+    // Vetor para armazenar a quantidade de almoços por dia da semana
+    int almocos[7];
+    char *dias[7] = {"Domingo", "Segunda", "Terca", "Quarta", "Quinta", "Sexta", "Sabado"};
+    int i, total = 0;
+    float media;
+
+    // Entrada de dados com validação
+    printf("Digite a quantidade de almocos servidos em cada dia da semana:\n\n");
+    for (i = 0; i < 7; i++) {
+        do {
+            printf("%s: ", dias[i]);
+            scanf("%d", &almocos[i]);
+            if (almocos[i] < 0) {
+                printf("Valor invalido! Digite novamente (>=0).\n");
+            }
+        } while (almocos[i] < 0);
+
+        total += almocos[i]; // soma para cálculo da média
+    }
+
+    // Cálculo da média semanal
+    media = total / 7.0;
+
+    // Identificar o dia de pico (maior valor) e o dia de menor consumo
+    int pico = almocos[0], diaPico = 0;
+    int menor = almocos[0], diaMenor = 0;
+    for (i = 1; i < 7; i++) {
+        if (almocos[i] > pico) {
+            pico = almocos[i];
+            diaPico = i;
+        }
+        if (almocos[i] < menor) {
+            menor = almocos[i];
+            diaMenor = i;
+        }
+    }
+
+    // Relatório organizado
+    printf("\n=====================================\n");
+    printf("   Relatorio semanal do Almoçotech  \n"); 
+    printf("=====================================\n");
+
+    for (i = 0; i < 7; i++) {
+        printf("%-10s -> %d almoços\n", dias[i], almocos[i]);
+    }
+
+    printf("-------------------------------------\n");
+    printf("Total de almoços na semana: %d\n", total); 
+    printf("Media diaria de almoços: %.2f\n", media); 
+    printf("Dia de maior consumo (Pico): %s (%d almoços)\n", dias[diaPico], pico);
+    printf("Dia de menor consumo: %s (%d almoços)\n", dias[diaMenor], menor);
+
+    // Gráfico de barras (simples com '*')
+    printf("\n=====================================\n");
+    printf("   Grafico de Consumo de Almoços      \n"); 
+    printf("=====================================\n");
+    for (i = 0; i < 7; i++) {
+        printf("%-10s | ", dias[i]);
+        for (int j = 0; j < almocos[i] / 10; j++) { 
+            // cada * representa 10 almoços
+            printf("*");
+        }
+        printf(" (%d)\n", almocos[i]);
+    }
+
+    // Encerramento
+    printf("\n=====================================\n");
+    printf("     Obrigado por usar o sistema!     \n");
+    printf("=====================================\n");
+
+    return 0;
+}
